@@ -11,30 +11,80 @@ st.set_page_config(
 )
 
 # 3. Scraper Utility Functions 
+
 def fetch_returns_from_moneycontrol(url):
+    import requests
+    from bs4 import BeautifulSoup
+
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(url, headers=headers)
         response.raise_for_status()
     except Exception as e:
-        st.error(f"Error fetching page: {e}")
-        return {}
+        return {
+            "fund_name": "Error fetching page",
+            "3y_cagr": "N/A",
+            "benchmark": "N/A",
+            "category_avg": "N/A",
+            "category_rank": "N/A"
+        }
 
     soup = BeautifulSoup(response.content, "html.parser")
-    h2_tags = soup.find_all("h2")
+    fund_name = soup.find("h1").text.strip()
 
-    st.markdown("### 🔍 H2 Tags and Table Previews")
+    # Find the correct table after heading with "Compare performance"
+    compare_heading = soup.find(lambda tag: tag.name == "h2" and "compare performance" in tag.text.lower())
+    if not compare_heading:
+        return {
+            "fund_name": fund_name,
+            "3y_cagr": "N/A",
+            "benchmark": "N/A",
+            "category_avg": "N/A",
+            "category_rank": "N/A"
+        }
 
-    for i, tag in enumerate(h2_tags):
-        st.markdown(f"**H2-{i}:** {tag.text.strip()}")
-        next_table = tag.find_next("table")
-        if next_table:
-            preview_row = next_table.find("tr")
-            preview_data = [td.text.strip() for td in preview_row.find_all("td")]
-            st.markdown(f"🔸 First Row: {preview_data}")
-        st.markdown("---")
+    table = compare_heading.find_next("table")
+    rows = table.find_all("tr")
 
-    return {}
+    # Identify the column index for "3 Y"
+    header_cells = rows[0].find_all("td")
+    cagr_col_index = next((i for i, cell in enumerate(header_cells) if "3 Y" in cell.text), None)
+    if cagr_col_index is None:
+        return {
+            "fund_name": fund_name,
+            "3y_cagr": "N/A",
+            "benchmark": "N/A",
+            "category_avg": "N/A",
+            "category_rank": "N/A"
+        }
+
+    fund_cagr = benchmark_cagr = category_avg = category_rank = "N/A"
+    benchmark_name = ""
+
+    for row in rows:
+        cells = row.find_all("td")
+        if not cells or len(cells) <= cagr_col_index:
+            continue
+
+        row_label = cells[0].text.strip().lower()
+
+        if row_label == "this fund":
+            fund_cagr = cells[cagr_col_index].text.strip()
+        elif row_label.startswith("benchmark"):
+            benchmark_name = cells[0].text.strip().replace("Benchmark: ", "").strip()
+            benchmark_cagr = cells[cagr_col_index].text.strip()
+        elif row_label == "category average":
+            category_avg = cells[cagr_col_index].text.strip()
+        elif row_label == "category rank":
+            category_rank = cells[cagr_col_index].text.strip()
+
+    return {
+        "fund_name": fund_name,
+        "3y_cagr": fund_cagr,
+        "benchmark": f"{benchmark_name} ({benchmark_cagr})",
+        "category_avg": category_avg,
+        "category_rank": category_rank
+    }
 
 # 4. Session State Initialization
 if "num_funds" not in st.session_state:
