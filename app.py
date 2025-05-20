@@ -104,17 +104,16 @@ fund_names = df_urls["Fund Name"].dropna().tolist()
 # Show dynamic dropdowns
 st.markdown("### 🧮 Select Mutual Funds to Compare")
 
-# 1. Initialize session state
+# Step 1: Initialize session state
 if "extra_funds" not in st.session_state:
     st.session_state.extra_funds = 0
 
-# 2. Set limits
+# Step 2: Render dropdowns
 min_funds = 3
 max_funds = 6
 selected_funds = []
-
-# 3. Render dropdowns
 total_dropdowns = min_funds + st.session_state.extra_funds
+
 for i in range(total_dropdowns):
     available_funds = [f for f in fund_names if f not in selected_funds]
     options = ["Start typing mutual fund name..."] + available_funds
@@ -127,12 +126,17 @@ for i in range(total_dropdowns):
     if fund != "Start typing mutual fund name...":
         selected_funds.append(fund)
 
-# 4. Add Fund Button (place after loop)
+# Step 3: Add button AFTER loop
 if st.session_state.extra_funds < (max_funds - min_funds):
     if st.button("➕ Add Another Fund"):
-        st.session_state.extra_funds += 1
-        st.experimental_rerun()
-        
+        # Safety: update and then trigger rerun in a try-except block
+        try:
+            st.session_state.extra_funds += 1
+            st.experimental_rerun()
+        except AttributeError:
+            st.warning("Something went wrong, please refresh the page.")
+
+
 # 6. Results (Placeholder for now)
 
 if st.button("🧮 Calculate Return Score"):
