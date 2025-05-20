@@ -7,9 +7,31 @@ from bs4 import BeautifulSoup
 
 # 2. Page Configuration
 st.set_page_config(
-    page_title="Mutual Fund Return Performance Checker",
+    page_title="Mutual Fund Portfolio Performance Checker",
     layout="wide"
 )
+
+# 💅 Custom Style for Hover Effects
+st.markdown("""
+    <style>
+    /* Button hover to green */
+    div.stButton > button:hover {
+        background-color: #2ecc71 !important;  /* Green */
+        color: white !important;
+    }
+
+    /* Dropdown hover and focus border color */
+    div[data-baseweb="select"] > div:focus-within {
+        border-color: #2ecc71 !important;
+        box-shadow: 0 0 0 0.2rem rgba(46, 204, 113, 0.25);
+    }
+
+    /* Remove red outline on dropdown focus */
+    div[data-baseweb="select"] > div {
+        border-color: #ccc;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # 3. Scraper Utility Functions 
 def fetch_returns_from_moneycontrol(url):
