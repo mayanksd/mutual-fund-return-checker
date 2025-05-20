@@ -10,15 +10,17 @@ st.set_page_config(
     layout="wide"
 )
 
-# 3. Utility Functions (to be filled later)
+# 3. Scraper Utility Functions 
 def fetch_returns_from_moneycontrol(url):
+    debug_output = []  # Store debug logs
+
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(url, headers=headers)
         response.raise_for_status()
     except Exception as e:
         return {
-            "fund_name": "Error fetching page",
+            "fund_name": f"Error fetching page: {e}",
             "3y_cagr": "N/A",
             "benchmark": "N/A",
             "category_avg": "N/A",
@@ -28,10 +30,20 @@ def fetch_returns_from_moneycontrol(url):
     soup = BeautifulSoup(response.content, "html.parser")
     tables = soup.find_all("table")
 
-    # Debug: Print index of table containing "Compare performance"
+    # Add log of number of tables found
+    debug_output.append(f"Number of tables found: {len(tables)}")
+
     for i, table in enumerate(tables):
         if "Compare performance" in table.get_text():
-            st.markdown(f"🔍 **Compare performance found in Table {i}**")
+            debug_output.append(f"✅ 'Compare performance' found in Table {i}")
+            break
+    else:
+        debug_output.append("❌ 'Compare performance' not found in any table.")
+
+    # Show debug logs in Streamlit
+    st.markdown("### 🔍 Debug Info")
+    for line in debug_output:
+        st.markdown(f"- {line}")
 
     return {
         "fund_name": "Debug mode",
