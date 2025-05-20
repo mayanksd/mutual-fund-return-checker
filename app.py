@@ -4,7 +4,6 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-
 # 2. Page Configuration
 st.set_page_config(
     page_title="Mutual Fund Return Performance Checker",
@@ -119,14 +118,15 @@ df_urls["URL"] = df_urls["URL"].str.strip()
 
 fund_names = df_urls["Fund Name"].tolist()
 
-# Add button + hint
+# Add button + hint (simplified, no extra click needed to hide)
 cols = st.columns([1, 3])
-with cols[0]:
-    if st.session_state["num_funds"] < 6:
+
+if st.session_state["num_funds"] < 6:
+    with cols[0]:
         if st.button("➕ Add Another Fund"):
-            st.session_state["add_triggered"] = True
-with cols[1]:
-    st.markdown("<span style='font-size: 0.85em; color: gray;'>Add up to 6 funds to compare</span>", unsafe_allow_html=True)
+            st.session_state["num_funds"] += 1
+    with cols[1]:
+        st.markdown("<span style='font-size: 0.85em; color: gray;'>Add up to 6 funds to compare</span>", unsafe_allow_html=True)
 
 # If button was clicked
 if st.session_state["add_triggered"]:
