@@ -143,10 +143,12 @@ for i in range(st.session_state["num_funds"]):
     
     fund_input = st.selectbox(
         f"Select Fund {i+1}",
-        ["Start typing mutual fund name..."] + available_options,
-        key=f"fund_select_{i}"
+        available_options,
+        index=None,
+        key=f"fund_select_{i}",
+        placeholder="Start typing mutual fund name..."
     )
-    
+
     if fund_input != "Start typing mutual fund name...":
         selected_funds_so_far.append(fund_input)
         selected_funds.append(fund_input)
