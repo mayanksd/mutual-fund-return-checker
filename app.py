@@ -102,41 +102,50 @@ df_urls = pd.read_excel("fund_returns_urls.xlsx")
 fund_names = df_urls["Fund Name"].dropna().tolist()
 
 # Show dynamic dropdowns
+# Title
 st.markdown("### 🧮 Select Mutual Funds to Compare")
 
-# Step 1: Initialize session state
-if "extra_funds" not in st.session_state:
-    st.session_state.extra_funds = 0
+# Ensure session state is initialized
+if "num_funds" not in st.session_state:
+    st.session_state["num_funds"] = 3  # Default to 3
 
-# Step 2: Render dropdowns
-min_funds = 3
-max_funds = 6
+if "add_triggered" not in st.session_state:
+    st.session_state["add_triggered"] = False
+
+df_urls = load_fund_list()
+fund_names = df_urls["Fund Name"].tolist()
+
+# Add button + hint
+cols = st.columns([1, 3])
+with cols[0]:
+    if st.session_state["num_funds"] < 6:
+        if st.button("➕ Add Another Fund"):
+            st.session_state["add_triggered"] = True
+with cols[1]:
+    st.markdown("<span style='font-size: 0.85em; color: gray;'>Add up to 6 funds to compare</span>", unsafe_allow_html=True)
+
+# If button was clicked
+if st.session_state["add_triggered"]:
+    if st.session_state["num_funds"] < 6:
+        st.session_state["num_funds"] += 1
+    st.session_state["add_triggered"] = False
+
+# Fund selection dropdowns
 selected_funds = []
-total_dropdowns = min_funds + st.session_state.extra_funds
+selected_funds_so_far = []
 
-for i in range(total_dropdowns):
-    available_funds = [f for f in fund_names if f not in selected_funds]
-    options = ["Start typing mutual fund name..."] + available_funds
-    fund = st.selectbox(
-        f"Fund {i+1}",
-        options=options,
-        index=0,
+for i in range(st.session_state["num_funds"]):
+    available_options = [f for f in fund_names if f not in selected_funds_so_far]
+    
+    fund_input = st.selectbox(
+        f"Select Fund {i+1}",
+        ["Start typing mutual fund name..."] + available_options,
         key=f"fund_select_{i}"
     )
-    if fund != "Start typing mutual fund name...":
-        selected_funds.append(fund)
-
-# Step 3: Add button AFTER loop
-if st.session_state.extra_funds < (max_funds - min_funds):
-    if st.button("➕ Add Another Fund"):
-        # Safety: update and then trigger rerun in a try-except block
-        try:
-            st.session_state.extra_funds += 1
-            st.experimental_rerun()
-        except AttributeError:
-            st.warning("Something went wrong, please refresh the page.")
-
-
+    
+    if fund_input != "Start typing mutual fund name...":
+        selected_funds_so_far.append(fund_input)
+        selected_funds.append(fund_input)
 # 6. Results (Placeholder for now)
 
 if st.button("🧮 Calculate Return Score"):
