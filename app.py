@@ -205,7 +205,6 @@ st.markdown("""
 ✅ Get live **portfolio-level rank** vs all category peers.  
 🍕 If you're in the **Top Quartile**, order a pizza — you're doing it right.  
 ⚠️ If you're **Average or Below**, it's time to act.  
-📈 Live return comparison vs each fund's **benchmark**.  
 ⚖️ All funds are **equally weighted** in the portfolio.  
 🇮🇳 Built for **Indian Equity Mutual Funds** — simple, sharp, and actionable.
 """)
