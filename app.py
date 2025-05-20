@@ -184,7 +184,7 @@ fund_names = df_urls["Fund Name"].dropna().tolist()
 
 # Show dynamic dropdowns
 # Title
-st.markdown("### 🧮 Select Mutual Funds to Compare")
+st.markdown("### 🖱️ Select Mutual Funds to Compare")
 
 # Ensure session state is initialized
 if "num_funds" not in st.session_state:
