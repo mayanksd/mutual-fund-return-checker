@@ -92,6 +92,76 @@ def fetch_returns_from_moneycontrol(url):
 if "num_funds" not in st.session_state:
     st.session_state["num_funds"] = 3
 
+# --- Portfolio Rank Calculation ---
+def get_portfolio_rank_score(rank_list):
+    """
+    Input: rank_list like ['1/20', '3/15']
+    Output:
+        - relative_rank_pct: Combined average percentile rank
+        - label: Emoji + Category label based on performance
+    """
+
+    total_rank = 0
+    total_count = 0
+    is_champion = all(r.split("/")[0] == "1" for r in rank_list if "/" in r)
+
+    for rank in rank_list:
+        try:
+            r, t = map(int, rank.split("/"))
+            total_rank += r
+            total_count += t
+        except:
+            continue  # Skip invalid formats
+
+    if total_count == 0:
+        return None, "❓ Unknown"
+
+    if is_champion:
+        return 0.0, "🏆 Champion Portfolio"
+
+    relative_rank_pct = total_rank / total_count
+
+    if relative_rank_pct <= 0.15:
+        label = "⭐ Top Quartile"
+    elif relative_rank_pct <= 0.45:
+        label = "👍 Above Average"
+    elif relative_rank_pct <= 0.55:
+        label = "😐 Average"
+    elif relative_rank_pct <= 0.75:
+        label = "😞 Below Average"
+    else:
+        label = "❌ Bottom Quartile"
+
+    return relative_rank_pct * 100, label
+
+# 📈 Portfolio Outperformance Calculator
+def get_portfolio_outperformance(data_list):
+    diffs = []
+    for d in data_list:
+        try:
+            fund_cagr = float(d["3y_cagr"].replace("%", ""))
+            benchmark_cagr = float(d["benchmark"].split("(")[-1].replace(")", "").replace("%", ""))
+            diffs.append(fund_cagr - benchmark_cagr)
+        except Exception:
+            continue
+
+    if not diffs:
+        return None, "⚠️ Not Available", ""
+
+    avg_diff = sum(diffs) / len(diffs)
+
+    # Bucketing
+    if avg_diff > 5:
+        label, emoji, desc = "🚀 Crushing It", "🚀", "Your portfolio is massively beating the benchmarks."
+    elif avg_diff > 0:
+        label, emoji, desc = "✅ Beating the Bench", "✅", "Solid outperformance overall."
+    elif avg_diff > -2:
+        label, emoji, desc = "😐 Neck and Neck", "😐", "Performing in line with benchmarks."
+    else:
+        label, emoji, desc = "📉 Dragging Behind", "📉", "Lagging noticeably, needs a relook."
+
+    return avg_diff, f"{label} {emoji}", desc
+
 # 5. UI: Fund Selection
 st.title("📈 Mutual Fund Return Performance Checker")
 st.markdown("Compare your mutual fund's 3-year CAGR with its benchmark and category.")
@@ -159,16 +229,39 @@ for i in range(st.session_state["num_funds"]):
     if fund_input != "Start typing mutual fund name...":
         selected_funds_so_far.append(fund_input)
         selected_funds.append(fund_input)
-# 6. Results (Placeholder for now)
 
+# 6. URL Map Construction Block
+url_map = {row["Fund Name"]: row["URL"] for _, row in df_urls.iterrows()}
+
+# 7. Calculate Return Score Block
 if st.button("🧮 Calculate Return Score"):
-    st.markdown("### 📊 Results")
-    for fund in selected_funds:
-        # Use placeholder return function for now
-        data = fetch_returns_from_moneycontrol(url_map[fund])       
-        st.markdown(f"**{data['fund_name']}**")
-        st.markdown(f"- 3Y CAGR: {data['3y_cagr']}")
-        st.markdown(f"- Benchmark: {data['benchmark']}")
-        st.markdown(f"- Category Avg: {data['category_avg']}")
-        st.markdown(f"- Rank: {data['category_rank']}")
-        st.markdown("---")
+    with st.spinner("🔄 Fetching live data..."):
+        st.markdown("### 📊 Results")
+        performance_data = []
+        
+        for fund in selected_funds:
+            data = fetch_returns_from_moneycontrol(url_map[fund])
+            performance_data.append(data)
+
+            st.markdown(f"**{data['fund_name']}**")
+            st.markdown(f"- 3Y CAGR: {data['3y_cagr']}")
+            st.markdown(f"- Benchmark: {data['benchmark']}")
+            st.markdown(f"- Category Avg: {data['category_avg']}")
+            st.markdown(f"- Rank: {data['category_rank']}")
+            st.markdown("---")
+
+        # 🏆 Portfolio Rank Summary
+        rank_list = [(d["category_rank"], d["category_size"]) for d in performance_data if d["category_rank"] and d["category_size"]]
+        portfolio_rank_value, rank_label, rank_emoji = get_portfolio_rank_score(rank_list)
+
+        st.markdown("### 🏆 Portfolio Performance Summary")
+        st.markdown(f"**Relative Rank:** {rank_label} {rank_emoji}")
+
+# 🚀 Portfolio Outperformance Summary
+outperf_value, outperf_label, outperf_desc = get_portfolio_outperformance(performance_data)
+
+if outperf_value is not None:
+    st.markdown(f"**Benchmark Comparison:** {outperf_label}")
+    st.markdown(f"<span style='color: gray; font-size: 0.9em;'>({outperf_value:+.2f}% vs benchmark) – {outperf_desc}</span>", unsafe_allow_html=True)
+else:
+    st.markdown("**Benchmark Comparison:** Not Available")
