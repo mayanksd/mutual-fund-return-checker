@@ -112,7 +112,11 @@ if "num_funds" not in st.session_state:
 if "add_triggered" not in st.session_state:
     st.session_state["add_triggered"] = False
 
-df_urls = load_fund_list()
+df_urls = pd.read_excel("fund_returns_urls.xlsx")
+df_urls = df_urls.dropna(subset=["Fund Name", "URL"])
+df_urls["Fund Name"] = df_urls["Fund Name"].str.strip()
+df_urls["URL"] = df_urls["URL"].str.strip()
+
 fund_names = df_urls["Fund Name"].tolist()
 
 # Add button + hint
