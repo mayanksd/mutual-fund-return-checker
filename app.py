@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from streamlit.runtime.scriptrunner import rerun
+
 
 # 2. Page Configuration
 st.set_page_config(
@@ -104,17 +104,17 @@ fund_names = df_urls["Fund Name"].dropna().tolist()
 # Show dynamic dropdowns
 st.markdown("### 🧮 Select Mutual Funds to Compare")
 
-# Initialize session state if not present
+# 1. Initialize session state
 if "extra_funds" not in st.session_state:
     st.session_state.extra_funds = 0
 
-selected_funds = []
+# 2. Set limits
 min_funds = 3
 max_funds = 6
+selected_funds = []
 
-# Total dropdowns = 3 default + extra ones added
+# 3. Render dropdowns
 total_dropdowns = min_funds + st.session_state.extra_funds
-
 for i in range(total_dropdowns):
     available_funds = [f for f in fund_names if f not in selected_funds]
     options = ["Start typing mutual fund name..."] + available_funds
@@ -127,12 +127,12 @@ for i in range(total_dropdowns):
     if fund != "Start typing mutual fund name...":
         selected_funds.append(fund)
 
-# Add button (placed at the bottom now)
+# 4. Add Fund Button (place after loop)
 if st.session_state.extra_funds < (max_funds - min_funds):
     if st.button("➕ Add Another Fund"):
         st.session_state.extra_funds += 1
-        rerun()
-
+        st.experimental_rerun()
+        
 # 6. Results (Placeholder for now)
 
 if st.button("🧮 Calculate Return Score"):
