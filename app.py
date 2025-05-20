@@ -164,8 +164,8 @@ def get_portfolio_outperformance(data_list):
     return avg_diff, f"{label} {emoji}", desc
 
 # 5. UI: Fund Selection
-st.title("📈 Mutual Fund Return Performance Checker")
-st.markdown("Compare your mutual fund's 3-year CAGR with its benchmark and category.")
+st.title("📈 Mutual Fund Portfolio Performance Checker")
+st.markdown("See your mutual fund portfolio's performance relative with its benchmark and category.")
 
 # Load fund list from Excel
 df_urls = pd.read_excel("fund_returns_urls.xlsx")
@@ -224,7 +224,7 @@ for i in range(st.session_state["num_funds"]):
         available_options,
         index=None,
         key=f"fund_select_{i}",
-        placeholder="Start typing mutual fund name..."
+        placeholder="Click and start typing 🔍..."
     )
 
     if fund_input != "Start typing mutual fund name...":
