@@ -12,12 +12,33 @@ st.set_page_config(
 
 # 3. Utility Functions (to be filled later)
 def fetch_returns_from_moneycontrol(url):
+    try:
+        headers = {"User-Agent": "Mozilla/5.0"}
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+    except Exception as e:
+        return {
+            "fund_name": "Error fetching page",
+            "3y_cagr": "N/A",
+            "benchmark": "N/A",
+            "category_avg": "N/A",
+            "category_rank": "N/A"
+        }
+
+    soup = BeautifulSoup(response.content, "html.parser")
+    tables = soup.find_all("table")
+
+    # Debug: Print index of table containing "Compare performance"
+    for i, table in enumerate(tables):
+        if "Compare performance" in table.get_text():
+            st.text(f"🔍 'Compare performance' found in Table {i}")
+
     return {
-        "fund_name": "Sample Fund",
-        "3y_cagr": "25.23%",
-        "benchmark": "Nifty XYZ Index (23.11%)",
-        "category_avg": "21.88%",
-        "category_rank": "5 of 23"
+        "fund_name": "Debug mode",
+        "3y_cagr": "N/A",
+        "benchmark": "N/A",
+        "category_avg": "N/A",
+        "category_rank": "N/A"
     }
 
 # 4. Session State Initialization
@@ -46,11 +67,17 @@ if st.session_state["num_funds"] < 6:
         st.session_state["num_funds"] += 1
 
 # 6. Results (Placeholder for now)
+url_map = {
+    "Nippon India Small Cap Fund - Direct Plan": "https://www.moneycontrol.com/mutual-funds/nav/nippon-india-small-cap-fund-direct-plan/returns/MRC935",
+    "Tata Small Cap Fund - Direct Plan": "https://www.moneycontrol.com/mutual-funds/nav/tata-small-cap-fund-direct-plan/returns/MTA1305",
+    "Axis Small Cap Fund - Direct Plan": "https://www.moneycontrol.com/mutual-funds/nav/axis-small-cap-fund-direct-plan/returns/MAA316"
+}
+
 if st.button("🧮 Calculate Return Score"):
     st.markdown("### 📊 Results")
     for fund in selected_funds:
         # Use placeholder return function for now
-        data = fetch_returns_from_moneycontrol("https://example.com")
+        data = fetch_returns_from_moneycontrol(url_map[fund])       
         st.markdown(f"**{data['fund_name']}**")
         st.markdown(f"- 3Y CAGR: {data['3y_cagr']}")
         st.markdown(f"- Benchmark: {data['benchmark']}")
