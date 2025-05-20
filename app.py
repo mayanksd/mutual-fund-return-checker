@@ -18,56 +18,23 @@ def fetch_returns_from_moneycontrol(url):
         response.raise_for_status()
     except Exception as e:
         st.error(f"Error fetching page: {e}")
-        return {
-            "fund_name": "Error",
-            "3y_cagr": "N/A",
-            "benchmark": "N/A",
-            "category_avg": "N/A",
-            "category_rank": "N/A"
-        }
+        return {}
 
     soup = BeautifulSoup(response.content, "html.parser")
+    h2_tags = soup.find_all("h2")
 
-    # Locate the heading that contains "Compare performance"
-    compare_heading = soup.find(lambda tag: tag.name in ["h2", "h3"] and "compare performance" in tag.text.lower())
-    if not compare_heading:
-        st.warning("⚠️ 'Compare performance' section not found.")
-        return {
-            "fund_name": "Section not found",
-            "3y_cagr": "N/A",
-            "benchmark": "N/A",
-            "category_avg": "N/A",
-            "category_rank": "N/A"
-        }
+    st.markdown("### 🔍 H2 Tags and Table Previews")
 
-    # Get the table right after the heading
-    compare_table = compare_heading.find_next("table")
-    rows = compare_table.find_all("tr")
+    for i, tag in enumerate(h2_tags):
+        st.markdown(f"**H2-{i}:** {tag.text.strip()}")
+        next_table = tag.find_next("table")
+        if next_table:
+            preview_row = next_table.find("tr")
+            preview_data = [td.text.strip() for td in preview_row.find_all("td")]
+            st.markdown(f"🔸 First Row: {preview_data}")
+        st.markdown("---")
 
-    try:
-        fund_name = soup.find("h1").text.strip()
-        fund_cagr = rows[1].find_all("td")[2].text.strip()
-        benchmark_name = rows[2].find_all("td")[0].text.strip().replace("Benchmark: ", "")
-        benchmark_cagr = rows[2].find_all("td")[2].text.strip()
-        category_avg = rows[3].find_all("td")[2].text.strip()
-        category_rank = rows[4].find_all("td")[2].text.strip()
-    except Exception as e:
-        st.warning("⚠️ Table structure mismatch.")
-        return {
-            "fund_name": fund_name,
-            "3y_cagr": "N/A",
-            "benchmark": "N/A",
-            "category_avg": "N/A",
-            "category_rank": "N/A"
-        }
-
-    return {
-        "fund_name": fund_name,
-        "3y_cagr": fund_cagr,
-        "benchmark": f"{benchmark_name} ({benchmark_cagr})",
-        "category_avg": category_avg,
-        "category_rank": category_rank
-    }
+    return {}
 
 # 4. Session State Initialization
 if "num_funds" not in st.session_state:
