@@ -46,7 +46,7 @@ if st.session_state["num_funds"] < 6:
         st.session_state["num_funds"] += 1
 
 # 6. Results (Placeholder for now)
-if st.button("Compare"):
+if st.button("🧮 Calculate Return Score"):
     st.markdown("### 📊 Results")
     for fund in selected_funds:
         # Use placeholder return function for now
