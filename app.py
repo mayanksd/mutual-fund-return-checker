@@ -197,8 +197,16 @@ def get_portfolio_outperformance(data_list):
     return avg_diff, f"{label} {emoji}", desc
 
 # 5. UI: Fund Selection
-st.title("📈 Mutual Fund Portfolio Performance Checker")
-st.markdown("See your mutual fund portfolio's performance relative with its benchmark and category.")
+st.markdown("## 📊 Mutual Fund Portfolio Return Checker")
+st.markdown("""
+Select mutual funds in your MF portfolio (min 3, max 6).  
+Get live **portfolio-level rank** vs all category peers.  
+🍕 If you're in the **Top Quartile**, order a pizza — you're doing it right.  
+⚠️ If you're **Average or Below**, it's time to act.  
+📈 Live return comparison vs each fund's **benchmark**.  
+⚖️ All funds are **equally weighted** in the portfolio.  
+🇮🇳 Built for **Indian Equity Mutual Funds** — simple, sharp, and actionable.
+""")
 
 # Load fund list from Excel
 df_urls = pd.read_excel("fund_returns_urls.xlsx")
@@ -268,7 +276,7 @@ for i in range(st.session_state["num_funds"]):
 url_map = {row["Fund Name"]: row["URL"] for _, row in df_urls.iterrows()}
 
 # 7. Calculate Return Score Block
-# 7. Calculate Return Score Block
+
 if st.button("🧮 Calculate Return Score"):
     with st.spinner("🔄 Fetching live data..."):
         performance_data = []
