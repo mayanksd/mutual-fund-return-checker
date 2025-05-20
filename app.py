@@ -11,7 +11,6 @@ st.set_page_config(
 )
 
 # 3. Scraper Utility Functions 
-
 def fetch_returns_from_moneycontrol(url):
     import requests
     from bs4 import BeautifulSoup
@@ -32,7 +31,7 @@ def fetch_returns_from_moneycontrol(url):
     soup = BeautifulSoup(response.content, "html.parser")
     fund_name = soup.find("h1").text.strip()
 
-    # Find the correct table after heading with "Compare performance"
+    # Find the "Compare performance" heading and table
     compare_heading = soup.find(lambda tag: tag.name == "h2" and "compare performance" in tag.text.lower())
     if not compare_heading:
         return {
@@ -46,8 +45,8 @@ def fetch_returns_from_moneycontrol(url):
     table = compare_heading.find_next("table")
     rows = table.find_all("tr")
 
-    # Identify the column index for "3 Y"
-    header_cells = rows[0].find_all("td")
+    # Fix: header may use <th>, not <td>
+    header_cells = rows[0].find_all(["td", "th"])
     cagr_col_index = next((i for i, cell in enumerate(header_cells) if "3 Y" in cell.text), None)
     if cagr_col_index is None:
         return {
@@ -66,7 +65,10 @@ def fetch_returns_from_moneycontrol(url):
         if not cells or len(cells) <= cagr_col_index:
             continue
 
-        row_label = cells[0].text.strip().lower()
+        try:
+            row_label = cells[0].text.strip().lower()
+        except Exception:
+            continue
 
         if row_label == "this fund":
             fund_cagr = cells[cagr_col_index].text.strip()
