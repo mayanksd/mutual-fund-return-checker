@@ -134,11 +134,6 @@ for i in range(st.session_state.extra_funds):
     selected_funds.append(fund)
 
 # 6. Results (Placeholder for now)
-url_map = {
-    "Nippon India Small Cap Fund - Direct Plan": "https://www.moneycontrol.com/mutual-funds/nav/nippon-india-small-cap-fund-direct-plan/returns/MRC935",
-    "Tata Small Cap Fund - Direct Plan": "https://www.moneycontrol.com/mutual-funds/nav/tata-small-cap-fund-direct-plan/returns/MTA1305",
-    "Axis Small Cap Fund - Direct Plan": "https://www.moneycontrol.com/mutual-funds/nav/axis-small-cap-fund-direct-plan/returns/MAA316"
-}
 
 if st.button("🧮 Calculate Return Score"):
     st.markdown("### 📊 Results")
