@@ -125,13 +125,13 @@ def get_portfolio_rank_score(rank_list):
     if relative_rank_pct <= 0.15:
         label = "⭐ Top Quartile"
     elif relative_rank_pct <= 0.45:
-        label = "👍 Above Average"
+        label = "👍 Above Average (Can do better)"
     elif relative_rank_pct <= 0.55:
-        label = "😐 Average"
+        label = "😐 Average (Meh!)"
     elif relative_rank_pct <= 0.75:
-        label = "😞 Below Average"
+        label = "😞 Below Average (Not Good, Take Action)"
     else:
-        label = "❌ Bottom Quartile"
+        label = "❌ Bottom Quartile (The Worst Performer!)"
 
     return relative_rank_pct * 100, label
 
@@ -153,13 +153,13 @@ def get_portfolio_outperformance(data_list):
 
     # Bucketing
     if avg_diff > 5:
-        label, emoji, desc = "🚀 Crushing It", "🚀", "Your portfolio is massively beating the benchmarks."
-    elif avg_diff > 0:
-        label, emoji, desc = "✅ Beating the Bench", "✅", "Solid outperformance overall."
-    elif avg_diff > -2:
-        label, emoji, desc = "😐 Neck and Neck", "😐", "Performing in line with benchmarks."
+        label, emoji, desc = "🚀 Crushing It 🏆 🕺 💃", "🚀", "Champion Portfolio! Top Quartile! 👏👏."
+    elif avg_diff > 1.5:
+        label, emoji, desc = "✅ Beating the Bench", "✅", "Decent outperformance, can do better."
+    elif avg_diff > -1:
+        label, emoji, desc = "😐 Neck and Neck", "😐", "Performing in line with benchmarks. Nothing exciting, can do much better."
     else:
-        label, emoji, desc = "📉 Dragging Behind", "📉", "Lagging noticeably, needs a relook."
+        label, emoji, desc = "📉 Dragging Behind 👎", "📉", "Lagging noticeably, needs a relook."
 
     return avg_diff, f"{label} {emoji}", desc
 
