@@ -157,9 +157,9 @@ def get_portfolio_outperformance(data_list):
     elif avg_diff > 1.5:
         label, emoji, desc = "✅ Beating the Bench", "✅", "Decent outperformance, can do better."
     elif avg_diff > -1:
-        label, emoji, desc = "😐 Neck and Neck", "😐", "Performing in line with benchmarks. Nothing exciting, can do much better."
+        label, emoji, desc = "😐 Neck and Neck 👎", "😐", "Performing in line with benchmarks. Nothing exciting, can do much better."
     else:
-        label, emoji, desc = "📉 Dragging Behind 👎", "📉", "Lagging noticeably, needs a relook."
+        label, emoji, desc = "📉 Dragging Behind 🚨", "📉", "Lagging noticeably, needs a relook."
 
     return avg_diff, f"{label} {emoji}", desc
 
