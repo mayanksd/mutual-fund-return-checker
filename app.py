@@ -12,15 +12,14 @@ st.set_page_config(
 
 # 3. Scraper Utility Functions 
 def fetch_returns_from_moneycontrol(url):
-    debug_output = []  # Store debug logs
-
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(url, headers=headers)
         response.raise_for_status()
     except Exception as e:
+        st.error(f"Error fetching page: {e}")
         return {
-            "fund_name": f"Error fetching page: {e}",
+            "fund_name": "Error",
             "3y_cagr": "N/A",
             "benchmark": "N/A",
             "category_avg": "N/A",
@@ -28,29 +27,46 @@ def fetch_returns_from_moneycontrol(url):
         }
 
     soup = BeautifulSoup(response.content, "html.parser")
-    tables = soup.find_all("table")
 
-    # Add log of number of tables found
-    debug_output.append(f"Number of tables found: {len(tables)}")
+    # Locate the heading that contains "Compare performance"
+    compare_heading = soup.find(lambda tag: tag.name in ["h2", "h3"] and "compare performance" in tag.text.lower())
+    if not compare_heading:
+        st.warning("⚠️ 'Compare performance' section not found.")
+        return {
+            "fund_name": "Section not found",
+            "3y_cagr": "N/A",
+            "benchmark": "N/A",
+            "category_avg": "N/A",
+            "category_rank": "N/A"
+        }
 
-    for i, table in enumerate(tables):
-        if "Compare performance" in table.get_text():
-            debug_output.append(f"✅ 'Compare performance' found in Table {i}")
-            break
-    else:
-        debug_output.append("❌ 'Compare performance' not found in any table.")
+    # Get the table right after the heading
+    compare_table = compare_heading.find_next("table")
+    rows = compare_table.find_all("tr")
 
-    # Show debug logs in Streamlit
-    st.markdown("### 🔍 Debug Info")
-    for line in debug_output:
-        st.markdown(f"- {line}")
+    try:
+        fund_name = soup.find("h1").text.strip()
+        fund_cagr = rows[1].find_all("td")[2].text.strip()
+        benchmark_name = rows[2].find_all("td")[0].text.strip().replace("Benchmark: ", "")
+        benchmark_cagr = rows[2].find_all("td")[2].text.strip()
+        category_avg = rows[3].find_all("td")[2].text.strip()
+        category_rank = rows[4].find_all("td")[2].text.strip()
+    except Exception as e:
+        st.warning("⚠️ Table structure mismatch.")
+        return {
+            "fund_name": fund_name,
+            "3y_cagr": "N/A",
+            "benchmark": "N/A",
+            "category_avg": "N/A",
+            "category_rank": "N/A"
+        }
 
     return {
-        "fund_name": "Debug mode",
-        "3y_cagr": "N/A",
-        "benchmark": "N/A",
-        "category_avg": "N/A",
-        "category_rank": "N/A"
+        "fund_name": fund_name,
+        "3y_cagr": fund_cagr,
+        "benchmark": f"{benchmark_name} ({benchmark_cagr})",
+        "category_avg": category_avg,
+        "category_rank": category_rank
     }
 
 # 4. Session State Initialization
