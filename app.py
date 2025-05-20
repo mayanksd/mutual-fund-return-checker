@@ -237,21 +237,7 @@ url_map = {row["Fund Name"]: row["URL"] for _, row in df_urls.iterrows()}
 # 7. Calculate Return Score Block
 if st.button("🧮 Calculate Return Score"):
     with st.spinner("🔄 Fetching live data..."):
-        st.markdown("### 📊 Results")
-        performance_data = []
-        
-        for fund in selected_funds:
-            data = fetch_returns_from_moneycontrol(url_map[fund])
-            performance_data.append(data)
-
-            st.markdown(f"**{data['fund_name']}**")
-            st.markdown(f"- 3Y CAGR: {data['3y_cagr']}")
-            st.markdown(f"- Benchmark: {data['benchmark']}")
-            st.markdown(f"- Category Avg: {data['category_avg']}")
-            st.markdown(f"- Rank: {data['category_rank']}")
-            st.markdown("---")
-
-        # 🏆 Portfolio Rank Summary
+         # 🏆 Portfolio Rank Summary
         rank_list = [d["category_rank"] for d in performance_data if d["category_rank"]]
         portfolio_rank_value, rank_label = get_portfolio_rank_score(rank_list)
 
@@ -267,3 +253,20 @@ if st.button("🧮 Calculate Return Score"):
         st.markdown(f"<span style='color: gray; font-size: 0.9em;'>({outperf_value:+.2f}% vs benchmark) – {outperf_desc}</span>", unsafe_allow_html=True)
     else:
         st.markdown("**Benchmark Comparison:** Not Available")
+   
+        
+        st.markdown("### 📊 Individual Fund Performance")
+        performance_data = []
+        
+        for fund in selected_funds:
+            data = fetch_returns_from_moneycontrol(url_map[fund])
+            performance_data.append(data)
+
+            st.markdown(f"**{data['fund_name']}**")
+            st.markdown(f"- 3Y CAGR: {data['3y_cagr']}")
+            st.markdown(f"- Benchmark: {data['benchmark']}")
+            st.markdown(f"- Category Avg: {data['category_avg']}")
+            st.markdown(f"- Rank: {data['category_rank']}")
+            st.markdown("---")
+
+       
