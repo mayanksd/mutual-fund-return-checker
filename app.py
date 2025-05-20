@@ -102,15 +102,21 @@ fund_names = df_urls["Fund Name"].dropna().tolist()
 
 # Show dynamic dropdowns
 st.markdown("### 🧮 Select Mutual Funds to Compare")
+
+# Initialize session state if not present
+if "extra_funds" not in st.session_state:
+    st.session_state.extra_funds = 0
+
 selected_funds = []
 min_funds = 3
 max_funds = 6
 
-# Initial 3 dropdowns
-for i in range(min_funds):
+# Total dropdowns = 3 default + extra ones added
+total_dropdowns = min_funds + st.session_state.extra_funds
+
+for i in range(total_dropdowns):
     available_funds = [f for f in fund_names if f not in selected_funds]
     options = ["Start typing mutual fund name..."] + available_funds
-
     fund = st.selectbox(
         f"Fund {i+1}",
         options=options,
@@ -120,24 +126,7 @@ for i in range(min_funds):
     if fund != "Start typing mutual fund name...":
         selected_funds.append(fund)
 
-# Additional dropdowns via "Add Another Fund"
-for i in range(st.session_state.extra_funds):
-    available_funds = [f for f in fund_names if f not in selected_funds]
-    options = ["Start typing mutual fund name..."] + available_funds
-
-    fund = st.selectbox(
-        f"Fund {min_funds + i + 1}",
-        options=options,
-        index=0,
-        key=f"extra_fund_select_{i}"
-    )
-    if fund != "Start typing mutual fund name...":
-        selected_funds.append(fund)
-
-# Optional: Add button to include more funds (up to 6)
-if "extra_funds" not in st.session_state:
-    st.session_state.extra_funds = 0
-
+# Add button (placed at the bottom now)
 if st.session_state.extra_funds < (max_funds - min_funds):
     if st.button("➕ Add Another Fund"):
         st.session_state.extra_funds += 1
