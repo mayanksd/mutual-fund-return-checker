@@ -121,17 +121,20 @@ fund_names = df_urls["Fund Name"].tolist()
 # Add button + hint (simplified, no extra click needed to hide)
 cols = st.columns([1, 3])
 
+# Ensure session state is initialized
 if "num_funds" not in st.session_state:
-    st.session_state["num_funds"] = 3  # or whatever your default is
+    st.session_state["num_funds"] = 3  # default
 
+# Button only appears if fewer than 6 funds
 if st.session_state["num_funds"] < 6:
     with cols[0]:
-        if st.button("➕ Add Another Fund"):
-            st.session_state["num_funds"] += 1
-            st.experimental_rerun()
+        add_clicked = st.button("➕ Add Another Fund")
     with cols[1]:
         st.markdown("<span style='font-size: 0.85em; color: gray;'>Add up to 6 funds to compare</span>", unsafe_allow_html=True)
 
+    if add_clicked:
+        st.session_state["num_funds"] += 1
+        
 # If button was clicked
 if st.session_state["add_triggered"]:
     if st.session_state["num_funds"] < 6:
