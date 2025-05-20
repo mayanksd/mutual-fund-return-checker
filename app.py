@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from streamlit.runtime.scriptrunner import rerun
 
 # 2. Page Configuration
 st.set_page_config(
@@ -130,7 +131,7 @@ for i in range(total_dropdowns):
 if st.session_state.extra_funds < (max_funds - min_funds):
     if st.button("➕ Add Another Fund"):
         st.session_state.extra_funds += 1
-        st.experimental_rerun()
+        rerun()
 
 # 6. Results (Placeholder for now)
 
