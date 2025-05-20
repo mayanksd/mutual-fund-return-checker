@@ -257,7 +257,7 @@ if st.button("🧮 Calculate Return Score"):
 
 
         st.markdown("### 🏆 Portfolio Performance Summary")
-        st.markdown(f"**Relative Rank:** {rank_label} {rank_emoji}")
+        st.markdown(f"**Relative Rank:** {rank_label}")
 
     # 🚀 Portfolio Outperformance Summary
     outperf_value, outperf_label, outperf_desc = get_portfolio_outperformance(performance_data)
