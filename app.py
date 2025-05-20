@@ -106,15 +106,33 @@ selected_funds = []
 min_funds = 3
 max_funds = 6
 
-# Show the first three mandatory inputs
+# Initial 3 dropdowns
 for i in range(min_funds):
+    available_funds = [f for f in fund_names if f not in selected_funds]
+    options = ["Start typing mutual fund name..."] + available_funds
+
     fund = st.selectbox(
         f"Fund {i+1}",
-        fund_names,
-        key=f"fund_select_{i}",
-        placeholder="Start typing mutual fund name..."
+        options=options,
+        index=0,
+        key=f"fund_select_{i}"
     )
-    selected_funds.append(fund)
+    if fund != "Start typing mutual fund name...":
+        selected_funds.append(fund)
+
+# Additional dropdowns via "Add Another Fund"
+for i in range(st.session_state.extra_funds):
+    available_funds = [f for f in fund_names if f not in selected_funds]
+    options = ["Start typing mutual fund name..."] + available_funds
+
+    fund = st.selectbox(
+        f"Fund {min_funds + i + 1}",
+        options=options,
+        index=0,
+        key=f"extra_fund_select_{i}"
+    )
+    if fund != "Start typing mutual fund name...":
+        selected_funds.append(fund)
 
 # Optional: Add button to include more funds (up to 6)
 if "extra_funds" not in st.session_state:
@@ -123,15 +141,7 @@ if "extra_funds" not in st.session_state:
 if st.session_state.extra_funds < (max_funds - min_funds):
     if st.button("➕ Add Another Fund"):
         st.session_state.extra_funds += 1
-
-for i in range(st.session_state.extra_funds):
-    fund = st.selectbox(
-        f"Fund {min_funds + i + 1}",
-        fund_names,
-        key=f"extra_fund_select_{i}",
-        placeholder="Start typing mutual fund name..."
-    )
-    selected_funds.append(fund)
+        st.experimental_rerun()
 
 # 6. Results (Placeholder for now)
 
