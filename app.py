@@ -96,22 +96,42 @@ if "num_funds" not in st.session_state:
 st.title("📈 Mutual Fund Return Performance Checker")
 st.markdown("Compare your mutual fund's 3-year CAGR with its benchmark and category.")
 
-# Simulated fund list for now
-fund_list = [
-    "Nippon India Small Cap Fund - Direct Plan",
-    "Axis Bluechip Fund - Direct Plan",
-    "HDFC Flexi Cap Fund - Direct Plan",
-    "Parag Parikh Flexi Cap Fund"
-]
+# Load fund list from Excel
+df_urls = pd.read_excel("fund_returns_urls.xlsx")
+fund_names = df_urls["Fund Name"].dropna().tolist()
 
+# Show dynamic dropdowns
+st.markdown("### 🧮 Select Mutual Funds to Compare")
 selected_funds = []
-for i in range(st.session_state["num_funds"]):
-    fund = st.selectbox(f"Select Fund {i+1}", fund_list, key=f"fund{i}")
+min_funds = 3
+max_funds = 6
+
+# Show the first three mandatory inputs
+for i in range(min_funds):
+    fund = st.selectbox(
+        f"Fund {i+1}",
+        fund_names,
+        key=f"fund_select_{i}",
+        placeholder="Start typing mutual fund name..."
+    )
     selected_funds.append(fund)
 
-if st.session_state["num_funds"] < 6:
+# Optional: Add button to include more funds (up to 6)
+if "extra_funds" not in st.session_state:
+    st.session_state.extra_funds = 0
+
+if st.session_state.extra_funds < (max_funds - min_funds):
     if st.button("➕ Add Another Fund"):
-        st.session_state["num_funds"] += 1
+        st.session_state.extra_funds += 1
+
+for i in range(st.session_state.extra_funds):
+    fund = st.selectbox(
+        f"Fund {min_funds + i + 1}",
+        fund_names,
+        key=f"extra_fund_select_{i}",
+        placeholder="Start typing mutual fund name..."
+    )
+    selected_funds.append(fund)
 
 # 6. Results (Placeholder for now)
 url_map = {
