@@ -259,11 +259,11 @@ if st.button("🧮 Calculate Return Score"):
         st.markdown("### 🏆 Portfolio Performance Summary")
         st.markdown(f"**Relative Rank:** {rank_label} {rank_emoji}")
 
-# 🚀 Portfolio Outperformance Summary
-outperf_value, outperf_label, outperf_desc = get_portfolio_outperformance(performance_data)
+    # 🚀 Portfolio Outperformance Summary
+    outperf_value, outperf_label, outperf_desc = get_portfolio_outperformance(performance_data)
 
-if outperf_value is not None:
-    st.markdown(f"**Benchmark Comparison:** {outperf_label}")
-    st.markdown(f"<span style='color: gray; font-size: 0.9em;'>({outperf_value:+.2f}% vs benchmark) – {outperf_desc}</span>", unsafe_allow_html=True)
-else:
-    st.markdown("**Benchmark Comparison:** Not Available")
+    if outperf_value is not None:
+        st.markdown(f"**Benchmark Comparison:** {outperf_label}")
+        st.markdown(f"<span style='color: gray; font-size: 0.9em;'>({outperf_value:+.2f}% vs benchmark) – {outperf_desc}</span>", unsafe_allow_html=True)
+    else:
+        st.markdown("**Benchmark Comparison:** Not Available")
