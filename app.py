@@ -118,7 +118,7 @@ def get_portfolio_rank_score(rank_list):
         return None, "❓ Unknown"
 
     if is_champion:
-        return 0.0, "🏆 Champion Portfolio"
+        return 0.0, "🏆 Champion Portfolio 💪"
 
     relative_rank_pct = total_rank / total_count
 
