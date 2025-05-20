@@ -31,7 +31,7 @@ def fetch_returns_from_moneycontrol(url):
     # Debug: Print index of table containing "Compare performance"
     for i, table in enumerate(tables):
         if "Compare performance" in table.get_text():
-            st.text(f"🔍 'Compare performance' found in Table {i}")
+            st.markdown(f"🔍 **Compare performance found in Table {i}**")
 
     return {
         "fund_name": "Debug mode",
