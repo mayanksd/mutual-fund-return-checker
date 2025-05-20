@@ -94,6 +94,7 @@ if "num_funds" not in st.session_state:
     st.session_state["num_funds"] = 3
 
 # --- Portfolio Rank Calculation ---
+
 def get_portfolio_rank_score(rank_list):
     """
     Input: rank_list like ['1/20', '3/15']
@@ -104,18 +105,23 @@ def get_portfolio_rank_score(rank_list):
 
     total_rank = 0
     total_count = 0
-    is_champion = all(r.split("/")[0] == "1" for r in rank_list if "/" in r)
+    cleaned_list = []
 
     for rank in rank_list:
         try:
+            if rank == "N/A" or "0" in rank:
+                continue  # ✅ Skip zero or N/A ranks
             r, t = map(int, rank.split("/"))
             total_rank += r
             total_count += t
+            cleaned_list.append(rank)
         except:
             continue  # Skip invalid formats
 
     if total_count == 0:
         return None, "❓ Unknown"
+
+    is_champion = all(r.split("/")[0] == "1" for r in cleaned_list)
 
     if is_champion:
         return 0.0, "🏆 Champion Portfolio 💪"
@@ -135,13 +141,18 @@ def get_portfolio_rank_score(rank_list):
 
     return relative_rank_pct * 100, label
 
-# 📈 Portfolio Outperformance Calculator
+# 📈 Portfolio Outperformance Calculator (Handles Edge Case 1)
 def get_portfolio_outperformance(data_list):
     diffs = []
     for d in data_list:
         try:
-            fund_cagr = float(d["3y_cagr"].replace("%", ""))
-            benchmark_cagr = float(d["benchmark"].split("(")[-1].replace(")", "").replace("%", ""))
+            fund_cagr = float(d["3y_cagr"].replace("%", "").strip())
+            benchmark_cagr = float(d["benchmark"].split("(")[-1].replace(")", "").replace("%", "").strip())
+
+            # 🛑 Skip funds with 0% fund or benchmark return
+            if fund_cagr == 0.0 or benchmark_cagr == 0.0:
+                continue
+
             diffs.append(fund_cagr - benchmark_cagr)
         except Exception:
             continue
@@ -151,7 +162,7 @@ def get_portfolio_outperformance(data_list):
 
     avg_diff = sum(diffs) / len(diffs)
 
-    # Bucketing
+    # 🎯 Bucket logic with your updated labels and emojis
     if avg_diff > 5:
         label, emoji, desc = "🚀 Crushing It 🏆 🕺 💃", "🚀", "Champion Portfolio! Top Quartile! 👏👏."
     elif avg_diff > 1.5:
