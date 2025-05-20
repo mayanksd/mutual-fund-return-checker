@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+
 # 2. Page Configuration
 st.set_page_config(
     page_title="Mutual Fund Return Performance Checker",
@@ -251,8 +252,9 @@ if st.button("🧮 Calculate Return Score"):
             st.markdown("---")
 
         # 🏆 Portfolio Rank Summary
-        rank_list = [(d["category_rank"], d["category_size"]) for d in performance_data if d["category_rank"] and d["category_size"]]
-        portfolio_rank_value, rank_label, rank_emoji = get_portfolio_rank_score(rank_list)
+        rank_list = [d["category_rank"] for d in performance_data if d["category_rank"]]
+        portfolio_rank_value, rank_label = get_portfolio_rank_score(rank_list)
+
 
         st.markdown("### 🏆 Portfolio Performance Summary")
         st.markdown(f"**Relative Rank:** {rank_label} {rank_emoji}")
