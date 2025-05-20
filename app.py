@@ -184,7 +184,7 @@ fund_names = df_urls["Fund Name"].dropna().tolist()
 
 # Show dynamic dropdowns
 # Title
-st.markdown("### 🖱️ Select Mutual Funds to Compare")
+st.markdown("###🖱️ Select Mutual Funds to Compare")
 
 # Ensure session state is initialized
 if "num_funds" not in st.session_state:
@@ -267,7 +267,7 @@ if st.button("🧮 Calculate Return Score"):
         if outperf_value is not None:
             st.markdown(f"**Benchmark Comparison:** {outperf_label}")
             st.markdown(
-                f"<span style='color: gray; font-size: 0.9em;'>({outperf_value:+.2f}% vs benchmark) – {outperf_desc}</span>",
+                f"<span style='color: gray; font-size: 0.9em;'>({outperf_value:+.1f}% Annual Returns vs Benchmark) – {outperf_desc}</span>",
                 unsafe_allow_html=True
             )
         else:
