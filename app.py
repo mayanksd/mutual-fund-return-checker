@@ -311,7 +311,7 @@ if st.button("🧮 Calculate Return Score"):
 
         import urllib.parse
 
-        share_message = f"My MF Portfolio ranks in the {rank_label} 🚀\nOutperformance vs Benchmark: {outperf_value:+.1f}%\nCheck yours: https://mfportfolioreturns.mayankdwivedi.com"
+        share_message = f"My Mutual Fund Portfolio ranks in the {rank_label} 🚀\nOutperformance vs Benchmark: {outperf_value:+.1f}%\nCheck yours: https://mfportfolioreturns.mayankdwivedi.com"
 
         wa_url = "https://wa.me/?text=" + urllib.parse.quote(share_message)
         li_url = "https://www.linkedin.com/sharing/share-offsite/?url=" + urllib.parse.quote("https://mfportfolioreturns.mayankdwivedi.com")
