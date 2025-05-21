@@ -34,6 +34,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 3. Scraper Utility Functions 
+@st.cache_data(ttl=86400)  # Cache results for 24 hours
 def fetch_returns_from_moneycontrol(url):
     import requests
     from bs4 import BeautifulSoup
@@ -303,6 +304,21 @@ if st.button("🧮 Calculate Return Score"):
             )
         else:
             st.markdown("**Benchmark Comparison:** Not Available")
+
+        # -------------------------------
+        # 🔗 Share Buttons: WhatsApp + LinkedIn
+        # -------------------------------
+
+        import urllib.parse
+
+        share_message = f"My MF Portfolio ranks in the {rank_label} 🚀\nOutperformance vs Benchmark: {outperf_value:+.1f}%\nCheck yours: https://mfportfolioreturns.mayankdwivedi.com"
+
+        wa_url = "https://wa.me/?text=" + urllib.parse.quote(share_message)
+        li_url = "https://www.linkedin.com/sharing/share-offsite/?url=" + urllib.parse.quote("https://mfportfolioreturns.mayankdwivedi.com")
+
+        st.markdown(f"[📤 Share on WhatsApp]({wa_url})", unsafe_allow_html=True)
+        st.markdown(f"[💼 Share on LinkedIn]({li_url})", unsafe_allow_html=True)
+        
 
         # 📊 Individual Fund Performance
         st.markdown("### 📊 Individual MF Performance")
