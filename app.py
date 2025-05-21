@@ -316,9 +316,18 @@ if st.button("🧮 Calculate Return Score"):
         wa_url = "https://wa.me/?text=" + urllib.parse.quote(share_message)
         li_url = "https://www.linkedin.com/sharing/share-offsite/?url=" + urllib.parse.quote("https://mfportfolioreturns.mayankdwivedi.com")
 
-        st.markdown(f"[📤 Share on WhatsApp]({wa_url})", unsafe_allow_html=True)
-        st.markdown(f"[💼 Share on LinkedIn]({li_url})", unsafe_allow_html=True)
-        
+        st.markdown(f"""
+        <a href="{wa_url}" target="_blank">
+            <button style="background-color:#25D366;color:white;padding:8px 16px;border:none;border-radius:5px;margin-right:10px;">
+                📤 Share on WhatsApp
+            </button>
+        </a>
+        <a href="{li_url}" target="_blank">
+            <button style="background-color:#0077b5;color:white;padding:8px 16px;border:none;border-radius:5px;">
+                💼 Share on LinkedIn
+            </button>
+        </a>
+        """, unsafe_allow_html=True)        
 
         # 📊 Individual Fund Performance
         st.markdown("### 📊 Individual MF Performance")
