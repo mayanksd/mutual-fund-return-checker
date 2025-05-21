@@ -197,7 +197,7 @@ def get_portfolio_outperformance(data_list):
     return avg_diff, f"{label} {emoji}", desc
 
 # 5. UI: Fund Selection
-st.title("📈 Mutual Fund Portfolio Performance Checker")
+st.title("💰 Mutual Fund Portfolio Performance Checker")
 # 5.2. About Section (Place this here)
 with st.expander("ℹ️ About this Tool", expanded=False):
     st.markdown("""
