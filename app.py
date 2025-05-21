@@ -171,7 +171,7 @@ def get_portfolio_outperformance(data_list):
             fund_cagr = float(d["3y_cagr"].replace("%", "").strip())
             benchmark_cagr = float(d["benchmark"].split("(")[-1].replace(")", "").replace("%", "").strip())
 
-            # 🛑 Skip funds with 0% fund or benchmark return
+            # Skip funds with 0% fund or benchmark return
             if fund_cagr == 0.0 or benchmark_cagr == 0.0:
                 continue
 
@@ -199,16 +199,15 @@ def get_portfolio_outperformance(data_list):
 # 5. UI: Fund Selection
 st.title("📈 Mutual Fund Portfolio Performance Checker")
 # 5.2. About Section (Place this here)
-st.markdown("### ℹ️ About this Tool")
-st.markdown("""
-✅ Select mutual funds in your MF portfolio (min 3, max 6).  
-✅ Get live **portfolio-level rank** vs all category peers.  
-🍕 If you're in the **Top Quartile**, order a pizza — you're doing it right.  
-⚠️ If you're **Average or Below**, it's time to act.  
-⚖️ All funds are **equally weighted** in the portfolio.  
-🇮🇳 Built for **Indian Equity Mutual Funds**.
-""")
-
+with st.expander("ℹ️ About this Tool", expanded=False):
+    st.markdown("""
+    ✅ Select mutual funds in your MF portfolio (min 3, max 6).  
+    ✅ Get live **portfolio-level rank** vs all category peers.  
+    🍕 If you're in the **Top Quartile**, order a pizza — you're doing it right.  
+    ⚠️ If you're **Average or Below**, it's time to act.  
+    ⚖️ All funds are **equally weighted** in the portfolio.  
+    🇮🇳 Built for **Indian Equity Mutual Funds**.
+    """)
 
 # Load fund list from Excel
 df_urls = pd.read_excel("fund_returns_urls.xlsx")
